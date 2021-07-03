@@ -7,7 +7,7 @@
 注意：使用mapper代理方法开发，namespace有特殊重要的作用
 -->
 
-<mapper namespace="test">
+<mapper namespace="cn.itcast.mybatis.mapper.UserMapper">
     <!-- 在 映射文件中配置很多sql语句 -->
     <!-- 需求：通过id查询用户表的记录 -->
     <!-- 通过 select执行数据库查询
@@ -20,7 +20,7 @@
     resultType：指定sql输出结果 的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。
      -->
 
-	<select id="findUserById" parameterType="int" resultType="user">
+	<select id="findUserById" parameterType="int" resultType="User">
 		SELECT * FROM USER WHERE id=#{id}
 	</select>
 

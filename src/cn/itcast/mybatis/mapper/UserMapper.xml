@@ -7,7 +7,52 @@
 注意：使用mapper代理方法开发，namespace有特殊重要的作用
 -->
 
-<mapper namespace="test">
+<mapper namespace="cn.itcast.mybatis.mapper.UserMapper">
+
+
+
+
+    <!-- 定义resultMap
+	将SELECT id id_,username username_ FROM USER 和User类中的属性作一个映射关系
+
+	type：resultMap最终映射的java对象类型,可以使用别名
+	id：对resultMap的唯一标识
+	 -->
+    <resultMap type="User" id="userResultMap">
+        <!-- id表示查询结果集中唯一标识
+	 	column：查询出来的列名
+	 	property：type指定的pojo类型中的属性名
+	 	最终resultMap对column和property作一个映射关系 （对应关系）
+	 	-->
+        <id column="id_" property="id"></id>
+        <!--
+	 	result：对普通名映射定义
+	 	column：查询出来的列名
+	 	property：type指定的pojo类型中的属性名
+	 	最终resultMap对column和property作一个映射关系 （对应关系）
+	 	 -->
+        <result column="username_" property="username"></result>
+
+    </resultMap>
+
+    <!-- 定义sql片段
+	id：sql片段的唯 一标识
+
+	经验：是基于单表来定义sql片段，这样话这个sql片段可重用性才高
+	在sql片段中不要包括 where
+	 -->
+    <sql id="query_user_where">
+        <if test="userCustom!=null">
+            <if test="userCustom.sex!=null and userCustom.sex!=''">
+                and user.sex = #{userCustom.sex}
+            </if>
+            <if test="userCustom.username!=null and userCustom.username!=''">
+                and user.username LIKE '%${userCustom.username}%'
+            </if>
+        </if>
+    </sql>
+
+
     <!-- 在 映射文件中配置很多sql语句 -->
     <!-- 需求：通过id查询用户表的记录 -->
     <!-- 通过 select执行数据库查询
@@ -20,7 +65,7 @@
     resultType：指定sql输出结果 的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。
      -->
 
-	<select id="findUserById" parameterType="int" resultType="user">
+	<select id="findUserById" parameterType="int" resultType="User">
 		SELECT * FROM USER WHERE id=#{id}
 	</select>
 
@@ -81,4 +126,38 @@
     <update id="UpdateUser" parameterType="cn.itcast.mybatis.po.User">
         UPDATE USER SET USERNAME=#{username},BIRTHDAY=#{birthday},SEX=#{sex},ADDRESS=#{address} WHERE ID=#{id}
     </update>
+
+    <!-- 用户信息综合查询
+	#{userCustom.sex}:取出pojo包装对象中性别值
+	${userCustom.username}：取出pojo包装对象中用户名称
+	 -->
+    <select  id="findUserList" parameterType="cn.itcast.mybatis.po.UserQueryVo" resultType="cn.itcast.mybatis.po.UserCustom">
+        SELECT * FROM USER
+        <where>
+            <include refid="query_user_where"></include>
+        </where>
+    </select>
+
+    <!-- 用户信息综合查询总数
+	parameterType：指定输入类型和findUserList一样
+	resultType：输出结果类型
+	 -->
+    <select id="findUserCount" parameterType="cn.itcast.mybatis.po.UserQueryVo" resultType="int">
+        <!--SELECT COUNT(*) FROM USER WHERE USER.sex = #{userCustom.sex} AND USER.username LIKE '%${userCustom.username}%';-->
+
+        <!-- 引用sql片段 的id，如果refid指定的id不在本mapper文件中，需要前边加namespace -->
+        SELECT COUNT(*) FROM USER
+        <where>
+            <include refid="query_user_where"></include>
+        </where>
+    </select>
+
+    <!-- 使用resultMap进行输出映射
+	resultMap：指定定义的resultMap的id，如果这个resultMap在其它的mapper文件，前边需要加namespace
+	-->
+    <select id="findUserByIdResultMap" parameterType="int" resultMap="userResultMap">
+        SELECT id id_,username username_ FROM USER WHERE id=#{value}
+    </select>
+
+
 </mapper>

@@ -103,4 +103,30 @@ public class OrdersMapperCustomTest {
         session.close();
 
     }
+
+
+
+    @Test
+    public void testFindOrdersUserLazyLoading() throws Exception{
+
+        SqlSession session = sqlSessionFactory.openSession();
+
+        //创建UserMapper对象，mybatis自动生成mapper代理对象
+        OrdersMapperCustom ordersMapperCustom= session.getMapper(OrdersMapperCustom.class);
+
+
+        //调用mapper的方法
+        List<Orders> list = ordersMapperCustom.findOrdersUserLazyLoading();
+
+        //遍历列表
+        for(Orders orders:list){
+            //执行getUser（）去查询用户信息，这里实现按需加载
+            User user = orders.getUser();
+            System.out.println(user);
+        }
+
+
+        session.close();
+
+    }
 }

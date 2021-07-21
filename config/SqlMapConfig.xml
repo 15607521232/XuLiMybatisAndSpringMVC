@@ -13,6 +13,14 @@
     <!-- <settings>
 
     </settings> -->
+    <settings>
+        <!-- 打开延迟加载 的开关 -->
+        <setting name="lazyLoadingEnabled" value="true"></setting>
+        <!-- 将积极加载改为消极加载即按需要加载 -->
+        <setting name="aggressiveLazyLoading" value="false"></setting>
+        <!-- 开启二级缓存 -->
+        <setting name="cacheEnabled" value="true"></setting>
+    </settings>
 
     <!--定义别名-->
     <typeAliases>

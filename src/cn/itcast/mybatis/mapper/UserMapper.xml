@@ -9,6 +9,12 @@
 
 <mapper namespace="cn.itcast.mybatis.mapper.UserMapper">
 
+    <!-- 开启本mapper的namespace下的二缓存
+	type：指定cache接口的实现类的类型，mybatis默认使用PerpetualCache
+	要和ehcache整合，需要配置type为ehcache实现cache接口的类型
+	 -->
+    <cache></cache>
+
 
 
 
@@ -63,6 +69,9 @@
     #{id}：其中的id表示接收输入 的参数，参数名称就是id，如果输入 参数是简单类型，#{}中的参数名可以任意，可以value或其它名称
 
     resultType：指定sql输出结果 的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。
+    useCache  二级缓存
+
+    <select id="findUserById" parameterType="int" resultType="User" useCache="false">
      -->
 
 	<select id="findUserById" parameterType="int" resultType="User">
@@ -158,6 +167,17 @@
     <select id="findUserByIdResultMap" parameterType="int" resultMap="userResultMap">
         SELECT id id_,username username_ FROM USER WHERE id=#{value}
     </select>
+
+    <!-- 根据id更新用户
+	分析：
+	需要传入用户的id
+	需要传入用户的更新信息
+	parameterType指定user对象，包括 id和更新信息，注意：id必须存在
+	#{id}：从输入 user对象中获取id属性值
+	 -->
+    <update id="updateUser" parameterType="cn.itcast.mybatis.po.User">
+        update user set username=#{username},birthday=#{birthday},sex=#{sex},address=#{address} where id=#{id}
+    </update>
 
 
 </mapper>
